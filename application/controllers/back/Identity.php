@@ -13,6 +13,7 @@ class Identity extends CI_Controller {
    {
       parent::__construct();
       $this->load->model('my_model', 'my', true);
+      $this->my->init($this);
       $this->load->model('identity_model', 'identity', true);
    }
 

@@ -12,6 +12,7 @@ class Banner extends CI_Controller {
 	{
 		parent::__construct();
       $this->load->model('my_model', 'my');
+      $this->my->init($this);
       $this->load->model('banner_model', 'banner');
    }
    

@@ -3,7 +3,7 @@
    let tablePosting;
    let base_url = '<?= base_url();?>';
 
-   // Show Table
+// Show Table
    $(document).ready(function(){
 
       tablePosting = $('#tablePosting').DataTable({
@@ -15,15 +15,15 @@
             'type': "POST"
          },
          columnDefs: [
-            { 
-               'targets': [  0, -1 ], 
-               'orderable': false, 
-            },
-            { 'width': '5px', 'targets': 0 },
-            { 'width': '5px', 'targets': 2 },
-            { 'width': '5px', 'targets': 3 },
-            { 'width': '5px', 'targets': 4 },
-            { 'width': '5px', 'targets': 6 },
+         { 
+            'targets': [  0, -1 ], 
+            'orderable': false, 
+         },
+         { 'width': '5px', 'targets': 0 },
+         { 'width': '5px', 'targets': 2 },
+         { 'width': '5px', 'targets': 3 },
+         { 'width': '5px', 'targets': 4 },
+         { 'width': '5px', 'targets': 6 },
          ],
          lengthMenu: [[5, 10, 50, -1], [5, 10, 50, "All"]]
       });
@@ -31,17 +31,17 @@
    });
 
 
-   // Reload Button
+// Reload Button
    function reload_table(){
       tablePosting.ajax.reload(null, false);
    }
 
-   //check all
+//check all
    $("#check-all").click(function () {
       $(".data-check").prop('checked', $(this).prop('checked'));
    });
 
-   // Delete Menu
+// Delete Menu
    function delete_posting(id){
       Swal.fire({
          title: 'Apakah anda yakin?',
@@ -50,7 +50,7 @@
          confirmButtonColor: '#3085d6',
          cancelButtonColor: '#d33',
          confirmButtonText: 'Hapus!'
-         }).then((result) => {
+      }).then((result) => {
          if (result.value) {
             $.ajax({
                type: 'post',
@@ -61,11 +61,24 @@
                },
                success: function(data){
                   if(data.status){
-                     tablePosting.row( $(this).parents('tr') ).remove().draw();
+// Remove row from DataTable
+                     tablePosting.row($('#' + id).parents('tr')).remove().draw();
+// Close modal if open
                      $('#modalPosting').modal('hide');
+// Show success message
                      Swal.fire({
                         icon: 'success',
-                        title: 'Success',
+                        title: 'Sukses!',
+                        text: 'Data postingan berhasil dihapus.',
+                        showConfirmButton: false,
+                        timer: 3500 
+                     });
+                  } else {
+// Handle server response indicating failure
+                     Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Gagal menghapus data postingan.',
                         showConfirmButton: true
                      });
                   }
@@ -75,7 +88,7 @@
                   Swal.fire({
                      icon: 'error',
                      title: 'Oops...',
-                     text: 'Terjadi Suatu Kesalahan!',
+                     text: 'Terjadi suatu kesalahan!',
                      showConfirmButton: true
                   });
                }
@@ -84,6 +97,7 @@
       });
    }
 
+// Bulk Delete
    function bulk_delete(){
       var list_id = [];
       $(".data-check:checked").each(function() {
@@ -91,12 +105,12 @@
       });
       if(list_id.length > 0){
          Swal.fire({
-         title: 'Are you sure delete this '+list_id.length+' data?',
-         icon: 'warning',
-         showCancelButton: true,
-         confirmButtonColor: '#3085d6',
-         cancelButtonColor: '#d33',
-         confirmButtonText: 'Hapus!'
+            title: 'Are you sure delete this '+list_id.length+' data?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Hapus!'
          }).then((result) => {
             if (result.value) {
                $.ajax({
@@ -108,14 +122,25 @@
                   },
                   success: function(data){
                      if(data.status){
-                        tablePosting.row( $(this).parents('tr') ).remove().draw();
+// Refresh table after successful deletion
+                        reload_table();
+// Close modal if open
                         $('#modalPosting').modal('hide');
+// Show success message
                         Swal.fire({
                            icon: 'success',
                            title: 'Success',
+                           text: 'Data berhasil dihapus.',
                            showConfirmButton: true
                         });
-                        reload_table();
+                     } else {
+// Handle server response indicating failure
+                        Swal.fire({
+                           icon: 'error',
+                           title: 'Oops...',
+                           text: 'Gagal menghapus data.',
+                           showConfirmButton: true
+                        });
                      }
                   },
                   error: function(){
@@ -130,7 +155,7 @@
                });
             }
          });
-      }else{
+      } else {
          Swal.fire({
             icon: 'error',
             title: 'Oops...',
@@ -139,8 +164,6 @@
          });
       }
    }
-
-   
 
 </script>
 

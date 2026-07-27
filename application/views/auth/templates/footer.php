@@ -6,5 +6,7 @@
       <!-- Custom scripts for all pages-->
       <script src="<?= base_url("assets/back/js/sb-admin-2.min.js") ?>"></script>
 
+      <script>setTimeout(function(){$(".alert").hide();}, 3000);</script>
+
    </body>
 </html>

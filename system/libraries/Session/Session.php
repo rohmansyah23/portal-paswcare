@@ -405,32 +405,25 @@ class CI_Session {
 	 */
 	protected function _ci_init_vars()
 	{
-		if ( ! empty($_SESSION['__ci_vars']))
-		{
+		if (isset($_SESSION['__ci_vars']) && is_array($_SESSION['__ci_vars'])) {
 			$current_time = time();
 
-			foreach ($_SESSION['__ci_vars'] as $key => &$value)
-			{
-				if ($value === 'new')
-				{
+			foreach ($_SESSION['__ci_vars'] as $key => &$value) {
+				if ($value === 'new') {
 					$_SESSION['__ci_vars'][$key] = 'old';
-				}
-				// Hacky, but 'old' will (implicitly) always be less than time() ;)
-				// DO NOT move this above the 'new' check!
-				elseif ($value < $current_time)
-				{
+				} elseif ($value === 'old' || $value < $current_time) {
 					unset($_SESSION[$key], $_SESSION['__ci_vars'][$key]);
 				}
 			}
 
-			if (empty($_SESSION['__ci_vars']))
-			{
+			if (empty($_SESSION['__ci_vars'])) {
 				unset($_SESSION['__ci_vars']);
 			}
 		}
 
 		$this->userdata =& $_SESSION;
 	}
+
 
 	// ------------------------------------------------------------------------
 
@@ -851,6 +844,70 @@ class CI_Session {
 		return isset($_SESSION[$key]);
 	}
 
+	//------------------------------------------------------------------------------
+
+	/**
+	 * Temp data (fetch)
+	 *
+	 * Legacy CI_Session compatibility method
+	 *
+	 * @param	string	$key	Session data key
+	 * @return	mixed	Session data value or NULL if not found
+	 */
+	public function tempdata($key = NULL)
+	{
+		if (isset($key))
+		{
+			return (isset($_SESSION['__ci_vars'], $_SESSION['__ci_vars'][$key], $_SESSION[$key]) && is_int($_SESSION['__ci_vars'][$key]))
+				? $_SESSION[$key]
+				: NULL;
+		}
+
+		$tempdata = array();
+
+		if ( ! empty($_SESSION['__ci_vars']))
+		{
+			foreach ($_SESSION['__ci_vars'] as $key => &$value)
+			{
+				is_int($value) && $tempdata[$key] = $_SESSION[$key];
+			}
+		}
+
+		return $tempdata;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Set tempdata
+	 *
+	 * Legacy CI_Session compatibility method
+	 *
+	 * @param	mixed	$data	Session data key or an associative array of items
+	 * @param	mixed	$value	Value to store
+	 * @param	int	$ttl	Time-to-live in seconds
+	 * @return	void
+	 */
+	public function set_tempdata($data, $value = NULL, $ttl = 300)
+	{
+		$this->set_userdata($data, $value);
+		$this->mark_as_temp(is_array($data) ? array_keys($data) : $data, $ttl);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Unset tempdata
+	 *
+	 * Legacy CI_Session compatibility method
+	 *
+	 * @param	mixed	$data	Session data key(s)
+	 * @return	void
+	 */
+	public function unset_tempdata($key)
+	{
+		$this->unmark_temp($key);
+	}
 	// ------------------------------------------------------------------------
 
 	/**
@@ -916,68 +973,4 @@ class CI_Session {
 	}
 
 	// ------------------------------------------------------------------------
-
-	/**
-	 * Temp data (fetch)
-	 *
-	 * Legacy CI_Session compatibility method
-	 *
-	 * @param	string	$key	Session data key
-	 * @return	mixed	Session data value or NULL if not found
-	 */
-	public function tempdata($key = NULL)
-	{
-		if (isset($key))
-		{
-			return (isset($_SESSION['__ci_vars'], $_SESSION['__ci_vars'][$key], $_SESSION[$key]) && is_int($_SESSION['__ci_vars'][$key]))
-				? $_SESSION[$key]
-				: NULL;
-		}
-
-		$tempdata = array();
-
-		if ( ! empty($_SESSION['__ci_vars']))
-		{
-			foreach ($_SESSION['__ci_vars'] as $key => &$value)
-			{
-				is_int($value) && $tempdata[$key] = $_SESSION[$key];
-			}
-		}
-
-		return $tempdata;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Set tempdata
-	 *
-	 * Legacy CI_Session compatibility method
-	 *
-	 * @param	mixed	$data	Session data key or an associative array of items
-	 * @param	mixed	$value	Value to store
-	 * @param	int	$ttl	Time-to-live in seconds
-	 * @return	void
-	 */
-	public function set_tempdata($data, $value = NULL, $ttl = 300)
-	{
-		$this->set_userdata($data, $value);
-		$this->mark_as_temp(is_array($data) ? array_keys($data) : $data, $ttl);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Unset tempdata
-	 *
-	 * Legacy CI_Session compatibility method
-	 *
-	 * @param	mixed	$data	Session data key(s)
-	 * @return	void
-	 */
-	public function unset_tempdata($key)
-	{
-		$this->unmark_temp($key);
-	}
-
 }

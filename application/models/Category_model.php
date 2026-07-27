@@ -12,4 +12,3 @@ class Category_model extends CI_Model {
 
 }
 
-/* End of file Category_model.php */

@@ -13,6 +13,7 @@ class Menu extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('my_model', 'my', true);
+		$this->my->init($this);
 	}
 
 	public function ajax_list()

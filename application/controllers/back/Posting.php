@@ -14,16 +14,17 @@ class Posting extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('my_model', 'my', true);
+		$this->my->init($this);
 		$this->load->model('posting_model', 'posting', true);
 		$this->load->model('menu_model', 'menu', true);
-      $this->load->model('category_model', 'category', true);	
+		$this->load->model('category_model', 'category', true);	
 	}
-	
+
 	public function ajax_list()
-   {
-      $list = $this->my->get_datatables($this->tableJoin, $this->select);
-      $data = [];
-      foreach($list as $li){
+	{
+		$list = $this->my->get_datatables($this->tableJoin, $this->select);
+		$data = [];
+		foreach($list as $li){
 			$row = [];
 			$row[] = '<input type="checkbox" class="data-check" value="' . $li->id . '">';
 			$row[] = $li->title;
@@ -34,31 +35,31 @@ class Posting extends CI_Controller {
 			$row[] = $li->is_active;
 			$row[] = $li->date;
 
-         $row[] = 
-         '<a class="btn btn-sm btn-warning text-white" href="'.base_url("back/posting/update/$li->id").'" 
-         title="Edit">
+			$row[] = 
+			'<a class="btn btn-sm btn-warning text-white" href="'.base_url("back/posting/update/$li->id").'" 
+			title="Edit">
 			<i class="fa fa-pencil-alt mr-1"></i></a>
 
 			<a class="btn btn-sm btn-danger" href="#" 
 			title="Delete" onclick="delete_posting('."'".$li->id."'".')">
 			<i class="fa fa-trash mr-1"></i></a>';
-         $data[] = $row;
-      }
+			$data[] = $row;
+		}
 
-      $output = [
-         'draw'            => $_POST['draw'],
-         'recordsTotal'    => $this->my->count_all(),
-         'recordsFiltered' => $this->my->count_filtered(),
-         'data'            => $data
-      ];
+		$output = [
+			'draw'            => $_POST['draw'],
+			'recordsTotal'    => $this->my->count_all(),
+			'recordsFiltered' => $this->my->count_filtered(),
+			'data'            => $data
+		];
 
-      echo json_encode($output);
+		echo json_encode($output);
 	}
 
 	public function get_data()
-   {
-      $data = $this->my->get_by_id($this->input->post('id', true));
-      echo json_encode($data);
+	{
+		$data = $this->my->get_by_id($this->input->post('id', true));
+		echo json_encode($data);
 	}
 
 	public function create()
@@ -74,6 +75,7 @@ class Posting extends CI_Controller {
 		$this->form_validation->set_rules('id_category','Category','required');
 
 		if($this->form_validation->run() == false){
+			$data['user'] = $this->my->cekData(['email' => $this->session->userdata('email')])->row_array();
 			$data['title'] = 'Tambah Posting';
 			$data['form_action'] = base_url("back/posting/create");
 			$data['menu'] = $this->menu->getMenu();
@@ -81,7 +83,7 @@ class Posting extends CI_Controller {
 			$data['input'] = $input;
 			$this->load->view('back/pages/article/form_post', $data);
 		}else{
-			
+
 			$data = [
 				'title' => $this->input->post('title', true),
 				'seo_title' => slugify($this->input->post('title', true)),
@@ -91,16 +93,18 @@ class Posting extends CI_Controller {
 				'thread' => $this->input->post('thread', true),
 				'id_category' => $this->input->post('id_category', true),
 				'is_active' => $this->input->post('is_active', true),
-				'date' => date('Y-m-d')
+				'date' => date('Y-m-d'),
+				'sumber_gambar' => $this->input->post('sumber_gambar', true),
+				'sumber_informasi' => $this->input->post('sumber_informasi', true),
 			];
 
-			
+
 			if(!empty($_FILES['photo']['name'])){
 				$upload = $this->posting->uploadImage();
 				$this->_create_thumbs($upload);	
 				$data['photo'] = $upload;
 			}
-			
+
 			$this->my->save($data);
 			$this->session->set_flashdata('success', 'Posting Berhasil Ditambahkan.');
 
@@ -110,7 +114,8 @@ class Posting extends CI_Controller {
 	}
 
 	public function update($id)
-	{
+	{	
+		$data['user'] = $this->my->cekData(['email' => $this->session->userdata('email')])->row_array();
 		$dataPost = $this->posting->getPostingById($id);
 
 		if(!$dataPost){
@@ -136,7 +141,7 @@ class Posting extends CI_Controller {
 			$data['input'] = $input;
 			$this->load->view('back/pages/article/form_post', $data);
 		}else{
-			
+
 			$data = [
 				'title' => $this->input->post('title', true),
 				'seo_title' => slugify($this->input->post('title', true)),
@@ -146,7 +151,9 @@ class Posting extends CI_Controller {
 				'thread' => $this->input->post('thread', true),
 				'id_category' => $this->input->post('id_category', true),
 				'is_active' => $this->input->post('is_active', true),
-				'date' => date('Y-m-d')
+				'date' => date('Y-m-d'),
+				'sumber_gambar' => $this->input->post('sumber_gambar', true),
+				'sumber_informasi' => $this->input->post('sumber_informasi', true)
 			];
 
 
@@ -177,7 +184,7 @@ class Posting extends CI_Controller {
 	public function _create_thumbs($file_name)
 	{
 		$config = [
-			// Large Image
+// Large Image
 			[
 				'image_library'	=> 'GD2',
 				'source_image'		=> './images/posting/' . $file_name,
@@ -186,7 +193,7 @@ class Posting extends CI_Controller {
 				'height'				=> 450,
 				'new_image'			=> './images/posting/large/' . $file_name
 			],
-			// Medium Image
+// Medium Image
 			[
 				'image_library'	=> 'GD2',
 				'source_image'		=> './images/posting/' . $file_name,
@@ -195,7 +202,7 @@ class Posting extends CI_Controller {
 				'height'				=> 188,
 				'new_image'			=> './images/posting/medium/' . $file_name
 			],
-			// Small Image
+// Small Image
 			[
 				'image_library'	=> 'GD2',
 				'source_image'		=> './images/posting/' . $file_name,
@@ -204,7 +211,7 @@ class Posting extends CI_Controller {
 				'height'				=> 169,
 				'new_image'			=> './images/posting/small/' . $file_name
 			],
-			// XSmall Image
+// XSmall Image
 			[
 				'image_library'	=> 'GD2',
 				'source_image'		=> './images/posting/' . $file_name,
@@ -227,38 +234,43 @@ class Posting extends CI_Controller {
 			$this->image_lib->clear();
 		}
 	}
-	
-	public function delete(){
+
+	public function delete()
+	{
 		$id = $this->input->post('id', true);
 		$posting = $this->my->get_by_id($id);
 
-		if(file_exists('images/posting/' . $posting->photo) && $posting->photo){
-			unlink('images/posting/' . $posting->photo);
-			unlink('images/posting/large/' . $posting->photo);
-			unlink('images/posting/medium/' . $posting->photo);
-			unlink('images/posting/small/' . $posting->photo);
-			unlink('images/posting/xsmall/' . $posting->photo);
+// Hapus file foto jika ada
+		if (!empty($posting->photo)) {
+			$photo_path = 'images/posting/' . $posting->photo;
+			if (file_exists($photo_path)) {
+				unlink($photo_path);
+			}
 		}
 
+// Hapus data dari database
 		$this->my->delete($id);
+
 		echo json_encode(["status" => TRUE]);
 	}
+
 
 	public function bulk_delete()
 	{
 		$list_id = $this->input->post('id', true);
-		
+
 		foreach ($list_id as $id){
 			$posting = $this->my->get_by_id($id);
-	
-			if(file_exists('images/posting/' . $posting->photo) && $posting->photo){
-				unlink('images/posting/' . $posting->photo);
-				unlink('images/posting/large/' . $posting->photo);
-				unlink('images/posting/medium/' . $posting->photo);
-				unlink('images/posting/small/' . $posting->photo);
-				unlink('images/posting/xsmall/' . $posting->photo);
+
+// Hapus file foto jika ada
+			if (!empty($posting->photo)) {
+				$photo_path = 'images/posting/' . $posting->photo;
+				if (file_exists($photo_path)) {
+					unlink($photo_path);
+				}
 			}
 
+// Hapus data dari database
 			$this->my->delete($id);
 		}
 
@@ -266,6 +278,6 @@ class Posting extends CI_Controller {
 	}
 
 
+
 }
 
-/* End of file Posting.php */

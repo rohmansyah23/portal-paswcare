@@ -67,7 +67,7 @@
    <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
          <div class="modal-header">
-            <h5 class="modal-title" id="modal-title">Form Artikel</h5>
+            <h5 class="modal-title" id="modal-title">Form Informasi</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                <span aria-hidden="true">&times;</span>
             </button>
@@ -78,14 +78,14 @@
                <input type="hidden" name="id" id="id">
 
                <div class="form-group row">
-                  <label for="title" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Judul Artikel</label>
+                  <label for="title" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Judul Informasi</label>
                   <div class="col-sm-10">
                      <input type="text" class="form-control" id="title" name="title" autocomplete="off">
                   </div>
                </div> 
 
                <div class="form-group row">
-                  <label for="article" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Konten</label>
+                  <label for="article" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Isi Informasi</label>
                   <div class="col-sm-10">
                      <textarea name="editor" id="editor" cols="30" rows="4" class="form-control"></textarea>
                   </div>
@@ -93,7 +93,7 @@
 
                <div class="form-group row">
                   <div class="col">
-                     <label for="featured" class="col-form-label">Featured</label>
+                     <label for="featured" class="col-form-label">Informasi Unggulan</label>
                      <select class="form-control" id="featured" name="featured">
                         <option value="N">Tidak</option>
                         <option value="Y">Ya</option> 
@@ -102,7 +102,7 @@
                   </div>
 
                   <div class="col">
-                     <label for="choice" class="col-form-label">Editor's Choice</label>
+                     <label for="choice" class="col-form-label">Informasi Pilihan </label>
                      <select class="form-control" id="choice" name="choice">
                         <option value="N">Tidak</option>
                         <option value="Y">Ya</option> 

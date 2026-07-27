@@ -3,9 +3,9 @@
    <!-- Sidebar - Brand -->
    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url('admin') ?>">
       <div class="sidebar-brand-icon">
-         <i class="fab fa-gofore"></i>
+         <i class="fa fa-shield-cat"></i>
       </div>
-      <div class="sidebar-brand-text mx-1">arsans Admin</div>
+      <div class="sidebar-brand-text mx-1">Administrator</div>
    </a>
 
    <!-- Divider -->
@@ -18,7 +18,7 @@
       <li class="nav-item">
    <?php endif ?>
       <a class="nav-link" href="<?= base_url('admin') ?>">
-         <i class="fas fa-fw fa-tachometer-alt"></i>
+         <i class="fas fa-fw fa-bars-progress"></i>
          <span>Dashboard</span>
       </a>
    </li>

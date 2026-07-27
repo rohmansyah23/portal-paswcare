@@ -37,4 +37,3 @@ class Identity_model extends CI_Model {
 
 }
 
-/* End of file Identity_model.php */

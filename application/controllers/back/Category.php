@@ -13,6 +13,7 @@ class Category extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('my_model', 'my');
+		$this->my->init($this);
    }
    
 	public function ajax_list()

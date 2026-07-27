@@ -1,30 +1,14 @@
-<!--================Home Banner Area =================-->
-<section class="banner_area">
-   <br><br>
-   <div class="banner_inner d-flex align-items-center" style="background-image: url(<?= base_url('images/banner/' . $banner->photo) ?>)">
-      <div class="overlay bg-parallax" data-stellar-ratio="0.9" data-stellar-vertical-offset="0" data-background=""></div>
-      <div class="container">
-         <div class="banner_content text-center">
-            <br><br><br><br>
-            <h2><span class="fa fa-paw"></span></h2>
-            <h2>Detail Berita</h2>
-            <div class="page_link">
-               <a href="<?= base_url('home') ?>">Home</a>
-               <a href="<?= base_url("blog/read/$posting->seo_title") ?>">Detail Berita</a>
-            </div>
-         </div>
-      </div>
-   </div>
-</section>
-<!--================End Home Banner Area =================-->
-
 <!--================News Area =================-->
-<section class="news_area single-post-area mt-5">
+<section class="news_area single-post-area mt-9">
    <div class="container">
       <div class="row">
+         
          <div class="col-lg-8">
             <div class="main_blog_details">
-               <img class="img-fluid" src="<?= base_url("images/posting/large/$posting->photo") ?>" alt="">
+               <img class="img-fluid" src="<?= base_url("images/posting/$posting->photo") ?>" alt="">
+               <div class="sumber-gambar">
+                  <p>Sumber Gambar : <?= $posting->sumber_gambar ?></p>
+               </div>
                <h4><?= $posting->title ?></h4>
                <div class="user_details">
                   <div class="float-left">
@@ -38,7 +22,10 @@
                      </div>
                   </div>
                </div>
-               <p><?= $posting->content ?></p>
+               <div class="news_details"><p><?= $posting->content ?></p></div>
+               <div class="sumber-informasi">
+                  <a href="<?= htmlspecialchars($posting->sumber_informasi) ?>" target="_blank">Sumber Informasi </a>
+               </div>
             </div>
          </div>
          

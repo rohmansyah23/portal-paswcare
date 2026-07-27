@@ -13,6 +13,7 @@ class Album extends CI_Controller {
 	{
 		parent::__construct();
       $this->load->model('my_model', 'my');
+      $this->my->init($this);
       $this->load->model('album_model', 'album');
    }
    

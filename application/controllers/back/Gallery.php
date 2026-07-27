@@ -14,6 +14,7 @@ class Gallery extends CI_Controller {
 	{
 		parent::__construct();
       $this->load->model('my_model', 'my');
+      $this->my->init($this);
       $this->load->model('gallery_model', 'gallery');
    }
    

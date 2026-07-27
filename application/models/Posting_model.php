@@ -5,82 +5,49 @@ class Posting_model extends CI_Model {
 
    public $perPage = 5;
 
-   public function getChoice()
+   public $perSearch = 100;
+
+   public function search($keyword, $page)
    {
       $this->db->from('posting');
-      $this->db->join('category', 'category.id = posting. id_category');
-      $this->db->where('choice', 'Y');
+      $this->db->join('category', 'category.id = posting.id_category');
+      $this->db->group_start();
+      $this->db->like('category.category_name', $keyword);
+      $this->db->or_like('posting.title', $keyword);
+      $this->db->group_end();
       $this->db->where('posting.is_active', 'Y');
       $this->db->order_by('posting.id', 'desc');
-      $this->db->limit(4);
+      $offset = $this->calculateRealOffset($page);
+      $this->db->limit($this->perSearch, $offset);
+
       return $this->db->get()->result();
    }
 
-   public function getThread()
+   public function countsearch($keyword)
    {
       $this->db->from('posting');
-      $this->db->join('category', 'category.id = posting. id_category');
-      $this->db->where('thread', 'Y');
-      $this->db->where('posting.is_active', 'Y');
-      $this->db->order_by('posting.id', 'desc');
-      $this->db->limit(4);
-      return $this->db->get()->result();
+      $this->db->join('category', 'category.id = posting.id_category');
+      $this->db->group_start();
+      $this->db->like('category.category_name', $keyword);
+      $this->db->or_like('posting.title', $keyword);
+      $this->db->group_end();
+
+      $this->db->where('posting.is_active', 'Y'); 
+
+      return $this->db->count_all_results();
    }
 
-   public function getFeatured()
+   public function calculatesearch($page)
    {
-      $this->db->from('posting');
-      $this->db->join('category', 'category.id = posting. id_category');
-      $this->db->where('featured', 'Y');
-      $this->db->where('posting.is_active', 'Y');
-      $this->db->order_by('posting.id', 'desc');
-      $this->db->limit(3);
-      return $this->db->get()->result();
-   }
-  
-   public function getLastNews()
-   {
-      $this->db->from('posting');
-      $this->db->join('category', 'category.id = posting. id_category');
-      $this->db->where('posting.is_active', 'Y');
-      $this->db->order_by('posting.id', 'desc');
-      $this->db->limit(4);
-      return $this->db->get()->result();
+      if (is_null($page) || empty($page)) {
+         $offset = 0;
+      } else {
+         $offset = ($page * $this->perSearch) - $this->perSearch;
+      }
+
+      return $offset;
    }
 
-   public function getMostPopular()
-   {
-      $this->db->from('posting');
-      $this->db->join('category', 'category.id = posting. id_category');
-      $this->db->where('thread', 'Y');
-      $this->db->where('posting.is_active', 'Y');
-      $this->db->order_by('posting.id', 'desc');
-      $this->db->limit(1);
-      return $this->db->get()->row();
-   }
-
-   public function getKesehatan()
-   {
-      $this->db->from('posting');
-      $this->db->join('category', 'category.id = posting. id_category');
-      $this->db->where('category.slug', 'kesehatan');
-      $this->db->where('posting.is_active', 'Y');
-      $this->db->order_by('posting.id', 'desc');
-      $this->db->limit(5);
-      return $this->db->get()->result();
-   }
-   
-   public function getTips()
-   {
-      $this->db->from('posting');
-      $this->db->join('category', 'category.id = posting. id_category');
-      $this->db->where('category.slug', 'tips-trik');
-      $this->db->where('posting.is_active', 'Y');
-      $this->db->order_by('posting.id', 'desc');
-      $this->db->limit(5);
-      return $this->db->get()->result();
-   }
-   
    public function getAllPosting($page)
    {
       $this->db->from('posting');
@@ -138,61 +105,63 @@ class Posting_model extends CI_Model {
    public function getDefaultValues()
    {
       return [
-         'title'        => '',
-         'seo_title'    => '',
-         'content'      => '',
-         'featured'     => 'N',
-         'choice'       => 'N',
-         'thread'       => 'N',
-         'id_category'  => '',
-         'photo'        => '',
-         'is_active'    => 'Y',
-         'date'         => ''
+         'title'           => '',
+         'seo_title'       => '',
+         'sumber_informasi'=> '',
+         'content'         => '',
+         'featured'        => 'N',
+         'choice'          => 'N',
+         'thread'          => 'N',
+         'id_category'     => '',
+         'photo'           => '',
+         'is_active'       => 'Y',
+         'date'            => '',
+         'sumber_gambar'   => ''
       ];
    }
 
    public function uploadImage(){
 
       $config = [
-        'upload_path'     => './images/posting',
-        'encrypt_name'    => TRUE,
-        'allowed_types'   => 'jpg|jpeg|gif|png|JPG|PNG',
-        'max_size'        => 1000,
-        'max_width'       => 0,
-        'max_height'      => 0,
-        'overwrite'       => TRUE,
-        'file_ext_tolower'=> TRUE
+         'upload_path'     => './images/posting',
+         'encrypt_name'    => TRUE,
+         'allowed_types'   => 'jpg|jpeg|gif|png|JPG|PNG',
+         'max_size'        => 1000,
+         'max_width'       => 0,
+         'max_height'      => 0,
+         'overwrite'       => TRUE,
+         'file_ext_tolower'=> TRUE
       ];
-  
+
       $this->load->library('upload', $config);
-  
+
       if(!$this->upload->do_upload('photo')){
-        $data['error_string'] = 'Upload error: '.$this->upload->display_errors('',''); 
-        exit();
+         $data['error_string'] = 'Upload error: '.$this->upload->display_errors('',''); 
+         exit();
       }
       return $this->upload->data('file_name');
    }
-  
+
    public function deleteImage($fileName){
       if(file_exists("./images/posting/$fileName")){
-        unlink("./images/posting/$fileName");
+         unlink("./images/posting/$fileName");
       }
    }
 
    public function paginate($page){
       return  $this->db->limit($this->perPage, $this->calculateRealOffset($page));
    }
-  
+
    public function calculateRealOffset($page){
       if(is_null($page) || empty($page)){
          $offset = 0;
       }else{
          $offset = ($page * $this->perPage) - $this->perPage;
       }
-      
+
       return $offset;
    }
-  
+
    public function makePagination($baseUrl, $uriSegment, $totalRows = null){
       $this->load->library('pagination');
 
@@ -202,10 +171,10 @@ class Posting_model extends CI_Model {
          'per_page'            => $this->perPage,
          'total_rows'          => $totalRows,
          'use_page_numbers'    => true,
-         
+
          'full_tag_open'       => '<ul class="pagination justify-content-center">',
          'full_tag_close'      => '</ul>',
-         
+
          'attributes'          => ['class' => 'page-link text-danger'],
          'first_link'          => false,
          'last_link'           => false,
@@ -229,6 +198,69 @@ class Posting_model extends CI_Model {
       return $this->pagination->create_links();
    }
 
-}
+   public function getChoice()
+   {
+      $this->db->from('posting');
+      $this->db->join('category', 'category.id = posting. id_category');
+      $this->db->where('choice', 'Y');
+      $this->db->where('posting.is_active', 'Y');
+      $this->db->order_by('posting.id', 'desc');
+      $this->db->limit(4);
+      return $this->db->get()->result();
+   }
 
-/* End of file Category_model.php */
+   public function getThread()
+   {
+      $this->db->from('posting');
+      $this->db->join('category', 'category.id = posting. id_category');
+      $this->db->where('thread', 'Y');
+      $this->db->where('posting.is_active', 'Y');
+      $this->db->order_by('posting.id', 'desc');
+      $this->db->limit(4);
+      return $this->db->get()->result();
+   }
+
+   public function getFeatured()
+   {
+      $this->db->from('posting');
+      $this->db->join('category', 'category.id = posting. id_category');
+      $this->db->where('featured', 'Y');
+      $this->db->where('posting.is_active', 'Y');
+      $this->db->order_by('posting.id', 'desc');
+      $this->db->limit(3);
+      return $this->db->get()->result();
+   }
+
+   public function getLastNews()
+   {
+      $this->db->from('posting');
+      $this->db->join('category', 'category.id = posting. id_category');
+      $this->db->where('posting.is_active', 'Y');
+      $this->db->order_by('posting.id', 'desc');
+      $this->db->limit(3);
+      return $this->db->get()->result();
+   }
+
+   public function getMostPopular()
+   {
+      $this->db->from('posting');
+      $this->db->join('category', 'category.id = posting. id_category');
+      $this->db->where('thread', 'Y');
+      $this->db->where('posting.is_active', 'Y');
+      $this->db->order_by('posting.id', 'desc');
+      $this->db->limit(1);
+      return $this->db->get()->row();
+   }
+
+   public function getVideoGames()
+   {
+      $this->db->from('posting');
+      $this->db->join('category', 'category.id = posting. id_category');
+      $this->db->where('category.slug', 'kesehatan');
+      $this->db->where('posting.is_active', 'Y');
+      $this->db->order_by('posting.id', 'desc');
+      $this->db->limit(5);
+      return $this->db->get()->result();
+   }
+
+}

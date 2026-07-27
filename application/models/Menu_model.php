@@ -6,12 +6,9 @@ class Menu_model extends CI_Model {
    protected $table = 'menu';
 
    public function getMenu(){
-      $user = $this->db->where('user_id', $this->session->userdata('id'))->get('users_groups')->row();
-      
-      if($user->group_id == 1){
-         $this->db->where('is_active', 'Y');
-         return $this->db->get($this->table)->result();
-      }
+         
+      $this->db->where('is_active', 'Y');   
+      return $this->db->get($this->table)->result();
    }
 
    public function getSubmenu($id){
@@ -25,4 +22,3 @@ class Menu_model extends CI_Model {
 
 }
 
-/* End of file Menu_model.php */

@@ -9,10 +9,11 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Admin - pawscare.com</title>
+  <title>Admin - <?= $title ?></title>
 
+  <link rel="icon" href="<?= base_url("images/favicon/logo.png") ?>" type="image/png">
   <!-- Font Awesome -->
-  <link href="<?= base_url("assets/back/vendors/fontawesome-free/css/all.min.css") ?>" rel="stylesheet" type="text/css">
+  <link href="<?= base_url() ?>assets/vendor/fontawesome-free-6.5.2-web/css/all.min.css" rel="stylesheet" type="text/css">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
   <!-- Datatables -->
@@ -60,7 +61,7 @@
                <?= isset($input->id) ? form_hidden('id', $input->id) : '' ?>
             
                <div class="form-group row">
-                  <label for="title" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Judul Artikel</label>
+                  <label for="title" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Judul Informasi</label>
                   <div class="col-sm-10">
                      <?= form_input('title', $input->title, ['class' => 'form-control', 'id' => 'title', 'required' => true, 'autofocus' => true, 'autocomplete' => 'off']) ?>
                      <?= form_error('title', '<small class="form-text text-danger">', '</small>') ?>
@@ -68,7 +69,15 @@
                </div> 
 
                <div class="form-group row">
-                  <label for="article" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Konten</label>
+                  <label for="sumber_informasi" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Sumber Informasi</label>
+                  <div class="col-sm-10">
+                     <?= form_input('sumber_informasi', $input->sumber_informasi, ['class' => 'form-control', 'id' => 'sumber_informasi', 'required' => true, 'autofocus' => true, 'autocomplete' => 'off']) ?>
+                     <?= form_error('sumber_informasi', '<small class="form-text text-danger">', '</small>') ?>
+                  </div>
+               </div> 
+
+               <div class="form-group row">
+                  <label for="article" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Isi Informasi</label>
                   <div class="col-sm-10">
                      <?= form_textarea('content', $input->content, ['row' => 4, 'class' => 'form-control', 'id' => 'summernote']); ?>
                      <?= form_error('content', '<small class="form-text text-danger">', '</small>') ?>
@@ -77,7 +86,7 @@
 
                <div class="form-group row">
                   <div class="col">
-                     <label for="featured" class="col-form-label">Featured</label>
+                     <label for="featured" class="col-form-label">Unggulan</label>
                      <select class="form-control" id="featured" name="featured">
                         <option value="N" <?php if($input->featured == "N"){ print ' selected'; }?>>Tidak</option>
                         <option value="Y" <?php if($input->featured == "Y"){ print ' selected'; }?>>Ya</option> 
@@ -85,7 +94,7 @@
                   </div>
 
                   <div class="col">
-                     <label for="choice" class="col-form-label">Editor's Choice</label>
+                     <label for="choice" class="col-form-label">Informasi Pilihan</label>
                      <select class="form-control" id="choice" name="choice">
                         <option value="N" <?php if($input->choice == "N"){ print ' selected'; }?>>Tidak</option>
                         <option value="Y" <?php if($input->choice == "Y"){ print ' selected'; }?>>Ya</option> 
@@ -93,7 +102,7 @@
                   </div>
 
                   <div class="col">
-                     <label for="thread" class="col-form-label">Popular News</label>
+                     <label for="thread" class="col-form-label">Terpupuler</label>
                      <select class="form-control" id="thread" name="thread">
                         <option value="N" <?php if($input->thread == "N"){ print ' selected'; }?>>Tidak</option>
                         <option value="Y" <?php if($input->thread == "Y"){ print ' selected'; }?>>Ya</option> 
@@ -135,6 +144,14 @@
                      <?php endif; ?>
                   </div>
                </div>
+
+               <div class="form-group row">
+                  <label for="sumber_gambar" class="col-sm-2 col-form-label"><span class="text-danger">*</span> Sumber Gambar</label>
+                  <div class="col-sm-10">
+                     <?= form_input('sumber_gambar', $input->sumber_gambar, ['class' => 'form-control', 'id' => 'sumber_gambar', 'required' => true, 'autofocus' => true, 'autocomplete' => 'off']) ?>
+                     <?= form_error('sumber_gambar', '<small class="form-text text-danger">', '</small>') ?>
+                  </div>
+               </div> 
 
                <a href="<?= base_url('admin/posting') ?>" class="btn btn-sm btn-secondary">Kembali</a>
                <button type="submit" class="btn btn-sm btn-primary float-right">Simpan</button>
